@@ -1,0 +1,12 @@
+fix: removed unused code
+# Please enter the commit message for your changes. Lines starting
+# with '#' will be ignored, and an empty message aborts the commit.
+#
+# On branch main
+# Your branch is up to date with 'origin/main'.
+#
+# Changes to be committed:
+#	deleted:    lib/core/base/base_controller.dart
+#	modified:   lib/main.dart
+#	modified:   lib/views/home.dart
+#
