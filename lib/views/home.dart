@@ -2,12 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:stroll/views/widgets/questions_options.dart';
+import 'package:stroll/views/widgets/background.dart';
+import 'package:stroll/views/widgets/user_quote.dart';
+import 'package:stroll/controllers/quote_controller.dart';
 import '../controllers/home_controller.dart';
 
 class Home extends StatelessWidget {
   Home({super.key});
 
   final HomeController controller = Get.put(HomeController());
+  final QuoteController quoteController = Get.put(QuoteController());
 
   @override
   Widget build(BuildContext context) {
@@ -15,38 +19,7 @@ class Home extends StatelessWidget {
       backgroundColor: Colors.black,
       body: Stack(
         children: [
-          Positioned(
-            top: 0,
-            left: 0,
-            right: 0,
-            height: 70.h,
-            child: Container(
-              decoration: const BoxDecoration(
-                image: DecorationImage(
-                  image: AssetImage("assets/images/bonfire.png"),
-                  fit: BoxFit.cover,
-                ),
-              ),
-            ),
-          ),
-          Positioned.fill(
-            top: 30.h,
-            child: Container(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [
-                    Colors.transparent,
-                    Colors.black.withValues(alpha: 0),
-                    Colors.black.withValues(alpha: 0.9),
-                    Colors.black,
-                  ],
-                  stops: const [0.0, 0.3, 0.6, 1.0],
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                ),
-              ),
-            ),
-          ),
+          TimeBasedBackground(),
           Column(
             children: [
               Padding(
@@ -77,9 +50,9 @@ class Home extends StatelessWidget {
                       children: [
                         Icon(Icons.timer, color: Colors.white, size: 16.sp),
                         SizedBox(width: 1.w),
-                        Text("22h 00m",
+                        Obx(() => Text(controller.remainingTime.value,
                             style: TextStyle(
-                                color: Colors.white, fontSize: 16.sp)),
+                                color: Colors.white, fontSize: 16.sp))),
                         SizedBox(width: 2.w),
                         Icon(Icons.person, color: Colors.white, size: 16.sp),
                         SizedBox(width: 1.w),
@@ -97,7 +70,9 @@ class Home extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    // Avatar and name row
                     Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         CircleAvatar(
                           radius: 6.w,
@@ -105,70 +80,71 @@ class Home extends StatelessWidget {
                               AssetImage("assets/images/avatar.jpg"),
                         ),
                         SizedBox(width: 2.w),
-                        Text(
-                          "Angelina, 28",
-                          style: TextStyle(
-                            fontSize: 16.sp,
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                "Angelina, 28",
+                                style: TextStyle(
+                                  fontSize: 16.sp,
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              SizedBox(height: 1.h),
+                              Obx(() {
+                                final question = controller.questions.first;
+                                return Text(
+                                  question.question,
+                                  style: TextStyle(
+                                    fontSize: 20.sp,
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                );
+                              }),
+                            ],
                           ),
                         ),
                       ],
                     ),
-                    SizedBox(height: 2.h),
-                    Obx(() {
-                      final question = controller.questions.first;
-                      return Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                    SizedBox(height: 1.h),
+                    SizedBox(
+                      width: double.infinity,
+                      child: Column(
                         children: [
-                          Center(
-                            child: Text(
-                              question.question,
-                              style: TextStyle(
-                                fontSize: 20.sp,
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
+                          const Center(child: UserQuote()),
+                          Obx(() {
+                            final question = controller.questions.first;
+                            return GridView.builder(
+                              shrinkWrap: true,
+                              physics: const NeverScrollableScrollPhysics(),
+                              gridDelegate:
+                                  SliverGridDelegateWithFixedCrossAxisCount(
+                                crossAxisCount: 2,
+                                crossAxisSpacing: 2.w,
+                                mainAxisSpacing: 2.h,
+                                childAspectRatio: 2.5,
                               ),
-                            ),
-                          ),
-                          SizedBox(height: 1.h),
-                          Center(
-                            child: Text(
-                              '"Mine is definitely the peace in the morning."',
-                              style: TextStyle(
-                                fontSize: 16.sp,
-                                color: Colors.grey,
-                                fontStyle: FontStyle.italic,
-                              ),
-                            ),
-                          ),
-                          SizedBox(height: 0.h),
-                          GridView.builder(
-                            shrinkWrap: true,
-                            physics: const NeverScrollableScrollPhysics(),
-                            gridDelegate:
-                                SliverGridDelegateWithFixedCrossAxisCount(
-                              crossAxisCount: 2,
-                              crossAxisSpacing: 2.w,
-                              mainAxisSpacing: 2.h,
-                              childAspectRatio: 2.5,
-                            ),
-                            itemCount: question.options.length,
-                            itemBuilder: (context, index) {
-                              return Obx(() => QuestionOption(
-                                    optionText: question.options[index],
-                                    isSelected:
-                                        controller.selectedOption.value ==
-                                            index,
-                                    onTap: () => controller.selectOption(index),
-                                    optionLetter:
-                                        String.fromCharCode(65 + index),
-                                  ));
-                            },
-                          ),
+                              itemCount: question.options.length,
+                              itemBuilder: (context, index) {
+                                return Obx(() => QuestionOption(
+                                      optionText: question.options[index],
+                                      isSelected:
+                                          controller.selectedOption.value ==
+                                              index,
+                                      onTap: () =>
+                                          controller.selectOption(index),
+                                      optionLetter:
+                                          String.fromCharCode(65 + index),
+                                    ));
+                              },
+                            );
+                          }),
                         ],
-                      );
-                    }),
+                      ),
+                    ),
                     SizedBox(height: 2.h),
                     Row(
                       children: [
