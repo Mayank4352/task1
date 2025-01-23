@@ -29,12 +29,15 @@ class Home extends StatelessWidget {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text(
-                          "Stroll Bonfire",
-                          style: TextStyle(
-                            fontSize: 25.sp,
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
+                        Padding(
+                          padding: EdgeInsets.only(left: 4.w),
+                          child: Text(
+                            "Stroll Bonfire",
+                            style: TextStyle(
+                              fontSize: 25.sp,
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ),
                         SizedBox(width: 1.w),
@@ -70,7 +73,6 @@ class Home extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Avatar and name row
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [

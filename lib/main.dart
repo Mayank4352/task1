@@ -8,7 +8,6 @@ import 'package:stroll/controllers/quote_controller.dart';
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Initialize controllers
   Get.put(TimeBackgroundController(), permanent: true);
   Get.put(QuoteController(), permanent: true);
 
